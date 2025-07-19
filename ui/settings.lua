@@ -4,6 +4,7 @@ local settings = {
     defaults = {
         instantHide = false,
         ignoreFishing = false,
+        dismissMicroMenuCallout = false,
     }
 }
 
@@ -21,6 +22,11 @@ function settings:Init()
         hipe.ignoreFishingText,
         hipe.ignoreFishingHint,
         "ignoreFishing"
+    )
+    self:CreateProxiedCheckBox(
+        hipe.dismissMicroMenuCalloutText,
+        hipe.dismissMicroMenuCalloutHint,
+        "dismissMicroMenuCallout"
     )
 
     Settings.RegisterAddOnCategory(self.category)

@@ -2,6 +2,7 @@ local name, hipe = ...
 
 local settings = hipe.settings
 local blocker = hipe.blocker
+local callout = hipe.callout
 
 ---@class Frame
 local frame = CreateFrame("Frame")
@@ -27,6 +28,12 @@ function frame:PLAYER_ENTERING_WORLD()
     for i = 1, 5, 1 do
         C_Timer.After(i, function()
             blocker:removeAllStandard()
+        end)
+    end
+    -- dismiss the professions tutorial frame if enabled in settings
+    if HipeConf.dismissMicroMenuCallout then
+        C_Timer.After(1, function()
+            callout:CloseMicroMenuProfessionCallout()
         end)
     end
 end
