@@ -1,5 +1,5 @@
-## Interface: 110007, 110100, 110105, 110107, 110200, 110205
-## Version: 1.2.1
+## Interface: 110007, 110100, 110105, 110107, 110200, 110205, 110207
+## Version: 1.2.2
 ## Title: Hide Profession Equipment
 ## Notes: A simple addon to remove Dragonflight profession appearances.
 ## AddonCompartmentFunc: Hipe_OnAddonCompartmentClick
