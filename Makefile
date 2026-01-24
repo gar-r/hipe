@@ -1,5 +1,5 @@
 ADDON_NAME := hipe
-ADDON_DIR := $(shell dirname `find ~ -path '*/_retail_/Wow.exe' 2>/dev/null | head -1`)/Interface/AddOns
+ADDON_DIR := $(shell find ~ -path '*/_retail_/Wow.exe' -print0 -quit 2>/dev/null | xargs -0 dirname)/Interface/AddOns
 ADDON_VERSION := $(shell grep '## Version' hipe.toc | cut -d ' ' -f 3)
 
 install: uninstall
