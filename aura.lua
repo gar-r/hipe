@@ -6,10 +6,9 @@ local aura = {
 }
 
 function aura:remove(spellId)
-    if InCombatLockdown() then
+    if InCombatLockdown() or not canaccessvalue(spellId) then
         return
     end
-
     local idx = self:find(spellId)
     if idx then
         CancelUnitBuff(self.player, idx, self.filter)
@@ -17,10 +16,6 @@ function aura:remove(spellId)
 end
 
 function aura:find(spellId)
-    if InCombatLockdown() then
-        return nil
-    end
-
     for i = 1, 40 do
         local buffData = C_UnitAuras.GetBuffDataByIndex(self.player, i, self.filter)
         if buffData == nil then

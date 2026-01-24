@@ -38,7 +38,10 @@ function frame:PLAYER_ENTERING_WORLD()
     end
 end
 
-function frame:UNIT_AURA(_, updateInfo)
+function frame:UNIT_AURA(target, updateInfo)
+    if not target == "player" then
+        return
+    end
     if HipeConf.instantHide then
         if updateInfo and updateInfo.addedAuras then
             for _, aura in pairs(updateInfo.addedAuras) do

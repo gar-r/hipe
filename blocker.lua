@@ -25,7 +25,7 @@ local blocker = {
 local aura = hipe.aura
 
 function blocker:removeIfBlocked(spellId)
-	if self.standard[spellId] then
+	if canaccessvalue(spellId) and self.standard[spellId] then
 		aura:remove(spellId)
 	end
 end
