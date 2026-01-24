@@ -10,7 +10,6 @@ local settings = {
 
 function settings:Init()
     self.category, self.layout = Settings.RegisterVerticalLayoutCategory(name)
-    self.category.ID = name
 
     self.layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(hipe.settingsTitle))
     self:CreateProxiedCheckBox(
