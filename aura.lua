@@ -18,7 +18,10 @@ end
 function aura:find(spellId)
     for i = 1, 40 do
         local buffData = C_UnitAuras.GetBuffDataByIndex(self.player, i, self.filter)
-        if buffData == nil then
+        if not buffData
+            or not canaccessvalue(buffData) 
+            or not canaccessvalue(buffData.spellId)
+        then
             break
         elseif spellId == buffData.spellId then
             return i
