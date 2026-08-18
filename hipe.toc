@@ -7,6 +7,7 @@
 ## IconTexture: Interface/ICONS/INV_Archaeology_Orcclans_Metalworkershammer.PNG
 ## Author: garric
 
+util.lua
 strings.lua
 
 ui/settings.lua

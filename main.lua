@@ -4,7 +4,6 @@ local settings = hipe.settings
 local blocker = hipe.blocker
 local callout = hipe.callout
 
----@class Frame
 local frame = CreateFrame("Frame")
 frame:RegisterUnitEvent("UNIT_AURA", "player")
 frame:RegisterUnitEvent("UNIT_SPELLCAST_STOP", "player")
@@ -25,7 +24,7 @@ end
 
 function frame:PLAYER_ENTERING_WORLD()
     -- aggressively queue a couple of aura removals after login/zone-change
-    for i = 1, 5, 1 do
+    for i = 1, 5 do
         C_Timer.After(i, function()
             blocker:removeAllStandard()
         end)
@@ -39,16 +38,35 @@ function frame:PLAYER_ENTERING_WORLD()
 end
 
 function frame:UNIT_AURA(target, updateInfo)
-    if not target == "player" then
-        return
-    end
-    if HipeConf.instantHide then
-        if updateInfo and updateInfo.addedAuras then
-            for _, aura in pairs(updateInfo.addedAuras) do
-                blocker:removeIfBlocked(aura.spellId)
-            end
-        end
-    end
+	-- skip events for other units, or when the update table is a read-protected secret
+	if target ~= "player" or not canaccessvalue(updateInfo) then
+		return
+	end
+
+	-- the aura list was fully rebuilt (login/zone change): always clear standard auras here,
+	-- even with instant-hide off, since no profession activity is in progress to wait on
+	if updateInfo.isFullUpdate then
+		blocker:removeAllStandard()
+		return
+	end
+
+	-- with instant-hide off, auras are removed later once the activity finishes, so do nothing here
+	if not (HipeConf and HipeConf.instantHide) then
+		return
+	end
+
+	-- resolve instance ids to aura data and remove any that match a blocked spell
+	blocker:removeByInstanceID(target, updateInfo.updatedAuraInstanceIDs)
+	blocker:removeByInstanceID(target, updateInfo.addedAuraInstanceIDs)
+
+	-- iterate the added auras payload and remove any matching a blocked spell (guard against secrets)
+	if canaccessvalue(updateInfo.addedAuras) and type(updateInfo.addedAuras) == "table" then
+		pcall(function()
+			for _, auraData in pairs(updateInfo.addedAuras) do
+				blocker:removeAuraData(auraData)
+			end
+		end)
+	end
 end
 
 function frame:UNIT_SPELLCAST_STOP()

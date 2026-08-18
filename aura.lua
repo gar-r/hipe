@@ -11,21 +11,20 @@ function aura:remove(spellId)
     end
     local idx = self:find(spellId)
     if idx then
-        CancelUnitBuff(self.player, idx, self.filter)
+        pcall(CancelUnitBuff, self.player, idx, self.filter)
     end
 end
 
 function aura:find(spellId)
-    for i = 1, 40 do
-        local buffData = C_UnitAuras.GetBuffDataByIndex(self.player, i, self.filter)
-        if not buffData
-            or not canaccessvalue(buffData) 
-            or not canaccessvalue(buffData.spellId)
-        then
-            break
-        elseif spellId == buffData.spellId then
-            return i
-        end
+    if InCombatLockdown() then
+        return nil  -- bail out in combat
+    end
+    local ok, buffData = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellId, self.filter)
+    if ok
+    and canaccessvalue(buffData)
+    and canaccessvalue(buffData.index)
+    then
+        return buffData.index
     end
     return nil
 end

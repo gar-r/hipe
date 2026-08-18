@@ -30,6 +30,27 @@ function blocker:removeIfBlocked(spellId)
 	end
 end
 
+function blocker:removeAuraData(auraData)
+	if canaccessvalue(auraData) and type(auraData) == "table" then
+		local spellId = auraData.spellId
+		if canaccessvalue(spellId) then
+			self:removeIfBlocked(spellId)
+		end
+	end
+end
+
+function blocker:removeByInstanceID(target, instanceIDs)
+	if type(instanceIDs) ~= "table" or not canaccessvalue(instanceIDs) then
+		return
+	end
+	for _, id in ipairs(instanceIDs) do
+		local ok, auraData = pcall(C_UnitAuras.GetAuraDataByAuraInstanceID, target, id)
+		if ok then
+			self:removeAuraData(auraData)
+		end
+	end
+end
+
 function blocker:removeAllStandard()
 	for k in pairs(self.standard) do
 		aura:remove(k)
