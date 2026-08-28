@@ -46,7 +46,7 @@ function frame:UNIT_AURA(target, updateInfo)
 	-- the aura list was fully rebuilt (login/zone change): always clear standard auras here,
 	-- even with instant-hide off, since no profession activity is in progress to wait on
 	local ok, isFull = pcall(function() return updateInfo.isFullUpdate end)
-	if ok and isFull then
+	if ok and canaccessvalue(isFull) and isFull then
 		blocker:removeAllStandard()
 		return
 	end
