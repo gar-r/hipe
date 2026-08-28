@@ -1,5 +1,7 @@
 local _, hipe = ...
 
+local issecretvalue, issecrettable, canaccesstable = issecretvalue, issecrettable, canaccesstable
+
 local blocker = {
 	standard = {
 		[394003] = "Spark of Madness",
@@ -25,22 +27,22 @@ local blocker = {
 local aura = hipe.aura
 
 function blocker:removeIfBlocked(spellId)
-	if canaccessvalue(spellId) and self.standard[spellId] then
+	if spellId and not issecretvalue(spellId) and self.standard[spellId] then
 		aura:remove(spellId)
 	end
 end
 
 function blocker:removeAuraData(auraData)
-	if canaccessvalue(auraData) and type(auraData) == "table" then
+	if type(auraData) == "table" and canaccesstable(auraData) and not issecrettable(auraData) then
 		local spellId = auraData.spellId
-		if canaccessvalue(spellId) then
+		if not issecretvalue(spellId) then
 			self:removeIfBlocked(spellId)
 		end
 	end
 end
 
 function blocker:removeByInstanceID(target, instanceIDs)
-	if type(instanceIDs) ~= "table" or not canaccessvalue(instanceIDs) then
+	if type(instanceIDs) ~= "table" or not canaccesstable(instanceIDs) or issecrettable(instanceIDs) then
 		return
 	end
 	for _, id in ipairs(instanceIDs) do

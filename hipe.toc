@@ -1,4 +1,4 @@
-## Interface: 110007, 110100, 110105, 110107, 110200, 110205, 110207, 120000, 120005, 120007, 120100
+## Interface: 120100
 ## Version: 1.2.14
 ## Title: Hide Profession Equipment
 ## Notes: A simple addon to remove Dragonflight profession appearances.
@@ -7,7 +7,6 @@
 ## IconTexture: Interface/ICONS/INV_Archaeology_Orcclans_Metalworkershammer.PNG
 ## Author: garric
 
-util.lua
 strings.lua
 
 ui/settings.lua

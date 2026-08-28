@@ -1,12 +1,14 @@
 local _, hipe = ...
 
+local issecretvalue, issecrettable, canaccesstable = issecretvalue, issecrettable, canaccesstable
+
 local aura = {
     player = "player",
     filter = "HELPFUL|CANCELABLE",
 }
 
 function aura:remove(spellId)
-    if InCombatLockdown() or not canaccessvalue(spellId) then
+    if InCombatLockdown() or issecretvalue(spellId) then
         return
     end
     local idx = self:find(spellId)
@@ -20,12 +22,11 @@ function aura:find(spellId)
         return nil  -- bail out in combat
     end
     local ok, buffData = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellId, self.filter)
-    if ok
-    and canaccessvalue(buffData)
-    and type(buffData) == "table"
-    and canaccessvalue(buffData.index)
-    then
-        return buffData.index
+    if ok and buffData and canaccesstable(buffData) and not issecrettable(buffData) then
+        local idx = buffData.index
+        if not issecretvalue(idx) then
+            return idx
+        end
     end
     return nil
 end

@@ -1,5 +1,7 @@
 local name, hipe = ...
 
+local issecretvalue, issecrettable, canaccesstable = issecretvalue, issecrettable, canaccesstable
+
 local settings = hipe.settings
 local blocker = hipe.blocker
 local callout = hipe.callout
@@ -38,15 +40,30 @@ function frame:PLAYER_ENTERING_WORLD()
 end
 
 function frame:UNIT_AURA(target, updateInfo)
-	-- skip events for other units, or when the update table is a read-protected secret
-	if target ~= "player" or not canaccessvalue(updateInfo) then
+	-- skip events for other units
+	if target ~= "player" then
+		return
+	end
+
+	-- nothing this addon does is possible during combat lockdown, and on 12.1 builds
+	-- the payload is a fully secret value then; bail out eagerly
+	if InCombatLockdown() then
+		return
+	end
+
+	-- the payload can also be secret outside lockdown (restricted encounters, PvP, ...)
+	-- where isFullUpdate cannot be read or boolean-tested; probe and bail when it is
+	local isFull
+	local ok = pcall(function()
+		isFull = updateInfo.isFullUpdate
+	end)
+	if not ok or issecretvalue(isFull) then
 		return
 	end
 
 	-- the aura list was fully rebuilt (login/zone change): always clear standard auras here,
 	-- even with instant-hide off, since no profession activity is in progress to wait on
-	local ok, isFull = pcall(function() return updateInfo.isFullUpdate end)
-	if ok and canaccessvalue(isFull) and isFull then
+	if isFull then
 		blocker:removeAllStandard()
 		return
 	end
@@ -60,10 +77,11 @@ function frame:UNIT_AURA(target, updateInfo)
 	blocker:removeByInstanceID(target, updateInfo.updatedAuraInstanceIDs)
 	blocker:removeByInstanceID(target, updateInfo.addedAuraInstanceIDs)
 
-	-- iterate the added auras payload and remove any matching a blocked spell (guard against secrets)
-	if canaccessvalue(updateInfo.addedAuras) and type(updateInfo.addedAuras) == "table" then
+	-- iterate the added auras payload and remove any matching a blocked spell
+	local addedAuras = updateInfo.addedAuras
+	if type(addedAuras) == "table" and canaccesstable(addedAuras) and not issecrettable(addedAuras) then
 		pcall(function()
-			for _, auraData in pairs(updateInfo.addedAuras) do
+			for _, auraData in pairs(addedAuras) do
 				blocker:removeAuraData(auraData)
 			end
 		end)
