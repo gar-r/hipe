@@ -21,7 +21,7 @@ function aura:find(spellId)
     end
     local ok, buffData = pcall(C_UnitAuras.GetPlayerAuraBySpellID, spellId, self.filter)
     if ok
-    and canaccessvalue(buffData)
+    and type(buffData) == "table"
     and canaccessvalue(buffData.index)
     then
         return buffData.index
