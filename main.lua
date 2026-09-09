@@ -61,10 +61,15 @@ function frame:UNIT_AURA(target, updateInfo)
 		return
 	end
 
-	-- the aura list was fully rebuilt (login/zone change): always clear standard auras here,
-	-- even with instant-hide off, since no profession activity is in progress to wait on
+	-- the aura list was fully rebuilt: clear standard auras here, but only with
+	-- instant-hide on. full rebuilds are not limited to login/zone change - they
+	-- also fire mid-gameplay (e.g. pulling a herb while stealthed applies the
+	-- profession aura in a full update), so with instant-hide off the removal
+	-- must be deferred to the channel-stop events instead.
 	if isFull then
-		blocker:removeAllStandard()
+		if HipeConf and HipeConf.instantHide then
+			blocker:removeAllStandard()
+		end
 		return
 	end
 
